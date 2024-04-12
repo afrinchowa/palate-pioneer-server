@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/',(req, res) =>{
-    res.send('Palate pioneer is Running')
+    res.send('Palate pioneer is Running on the port')
 })
 app.listen(port, () => {
     console.log(`Palate is sitting on port ${port}`);
