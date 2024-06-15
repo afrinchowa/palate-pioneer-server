@@ -31,13 +31,21 @@ async function run() {
     const cartCollection = client.db("palatedb").collection("carts");
 
     // users related api
-    app.post('/users', async(req,res)=>{
-      const user =req.body;
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      // insert email if user dont exists
+      // you can do this in many ways(1.email unique,2. upsert ,3.simple checking)
+      const query = { email: user.email };
+      const existingUser = await userCollection.findOne(query);
+      if (existingUser) {
+        return res.send({ message: "user already exists", insertedId: null });
+      }
+
       const result = await userCollection.insertOne(user);
       res.send(result);
-    } )
+    });
 
-// menu related api
+    // menu related api
     app.get("/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
       res.send(result);
@@ -61,12 +69,12 @@ async function run() {
       const result = await cartCollection.insertOne(cartItem);
       res.send(result);
     });
-app.delete("/carts/:id", async(req,res) =>{
-  const id =req.params.id;
-  const query={_id:new ObjectId(id)}
-  const result =await cartCollection.deleteOne(query)
-  res.send(result)
-})
+    app.delete("/carts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await cartCollection.deleteOne(query);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
